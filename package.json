@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "type": "module",
   "bin": {
-    "scientia": "./dist/index.js"
+    "imperial-cli": "./dist/index.js"
   },
   "devDependencies": {
     "@types/configstore": "^5.0.1",
@@ -37,6 +37,7 @@
     "argparse": "^2.0.1",
     "axios": "^0.26.1",
     "chalk": "^5.0.1",
+    "configstore": "^6.0.0",
     "figlet": "^1.5.2",
     "fuse.js": "^6.5.3",
     "gradient-string": "^2.0.0",
