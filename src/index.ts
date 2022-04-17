@@ -24,10 +24,10 @@ const parse = new ArgumentParser({
 
 parse.add_argument('shortcut', {nargs: "?", help: "Shortcut to course"})
 parse.add_argument('-v', '--version', {action: 'version', version});
-parse.add_argument('-c', '--clean', {action: 'store_true', help: "Clean configurations"});
-parse.add_argument('-o', '--open', {action: 'store_true', help: "Open folder based off shortcut or selection"});
-parse.add_argument('-d', '--dir', {action: 'store_true', help: "Save folders in current directory instead"});
-parse.add_argument('-a', '--all', {action: 'store_true', help: "Download all shortcut courses one go"});
+parse.add_argument('-c', '--clean', {action: 'store_true', help: "clean configuration and shortcuts"});
+parse.add_argument('-o', '--open', {action: 'store_true', help: "open folder based off shortcut or selection"});
+parse.add_argument('-d', '--dir', {action: 'store_true', help: "save folders in current directory instead"});
+parse.add_argument('-a', '--all', {action: 'store_true', help: "download resources for all courses with saved shortcuts together"});
 const args = parse.parse_args();
 
 const credentialStore = new CredentialStore();
@@ -39,7 +39,7 @@ const main = async () => {
    * Introduction to the CLI
    */
   await loadInterface();
-  await delay(2000);
+  await delay(500);
   console.log(chalk.hex('#3296c8')(`Scientia CLI v${"1.0.0"}`));
 
   if (args.clean) {

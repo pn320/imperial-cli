@@ -70,7 +70,7 @@ class ConcurrentDownloader {
         }
       });
     } else {
-      console.log(chalk.greenBright("All resources already downloaded, no new to pull!"))
+      console.log(success("All resources already downloaded, no new to pull!"))
       if (openFolder) {
         const openFolderResponse = await promptOpenFolder()
         if (openFolderResponse.openFolder) {

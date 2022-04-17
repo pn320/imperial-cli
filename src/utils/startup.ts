@@ -1,14 +1,13 @@
 import chalk from 'chalk';
-import chalkAnimation from 'chalk-animation';
 import figlet from 'figlet';
+import gradient from "gradient-string";
 
 export const intro = chalk.hex('#64c8fa');
 
 export const loadInterface = async (): Promise<void> => {
   figlet("Imperial CLI!", async (_, data) => {
     if (data) {
-      const animation = chalkAnimation.radar(data, 1.2);
-      animation.start();
+      console.log(gradient.mind(data));
     }
   });
 }
