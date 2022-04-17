@@ -1,4 +1,4 @@
-## Scientia CLI
+## Imperial CLI
 
 ### Features and TODOs
 A command line interface for the Imperial scientia website. Eventually will be extended to gitlab and panopto support (see also [#4](/../../issues/4), and [#6](/../../issues/6)). For now, largely based on [Mayank Sharma's CLI for Materials](https://github.com/mayanksharma3/materials-cli), but will eventally be extended to service all of Imperial's resource platforms (Gitlab, Panopto, Scientia). 
