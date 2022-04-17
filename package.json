@@ -5,10 +5,12 @@
   "main": "./dist/index.js",
   "type": "module",
   "bin": {
-    "imperial": "./dist/index.js"
+    "scientia": "./dist/index.js"
   },
   "devDependencies": {
     "@types/configstore": "^5.0.1",
+    "@types/inquirer-autocomplete-prompt": "^1.3.4",
+    "@types/listr": "^0.14.4",
     "nodemon": "^2.0.15"
   },
   "scripts": {
@@ -30,14 +32,19 @@
     "@types/inquirer": "^8.2.0",
     "@types/keytar": "^4.4.2",
     "@types/node": "^17.0.23",
+    "@types/open": "^6.2.1",
     "@types/ora": "^3.2.0",
     "argparse": "^2.0.1",
     "axios": "^0.26.1",
     "chalk": "^5.0.1",
     "chalk-animation": "^1.6.0",
     "figlet": "^1.5.2",
+    "fuse.js": "^6.5.3",
     "inquirer": "^8.2.2",
+    "inquirer-autocomplete-prompt": "^2.0.0",
     "keytar": "^7.9.0",
+    "listr": "^0.14.3",
+    "open": "^8.4.0",
     "ora": "^6.1.0",
     "typescript": "^4.6.3"
   }

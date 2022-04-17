@@ -5,7 +5,7 @@ import figlet from 'figlet';
 export const intro = chalk.hex('#64c8fa');
 
 export const loadInterface = async (): Promise<void> => {
-  figlet("Scientia CLI!", async (_, data) => {
+  figlet("Imperial CLI!", async (_, data) => {
     if (data) {
       const animation = chalkAnimation.radar(data, 1.2);
       animation.start();

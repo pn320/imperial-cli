@@ -3,11 +3,15 @@
 import { ArgumentParser } from "argparse";
 import chalk from "chalk";
 import ora from "ora";
+import path from "path";
+import { Course } from "./interfaces/course.js";
 import { TokenAndCredential } from "./interfaces/credentials.js";
+import { Resource, ResourceWithLink } from "./interfaces/resource.js";
+import ConcurrentDownloader from "./lib/concurrentDownloader.js";
 import ConfigStore from "./lib/configstore.js";
 import CredentialStore from "./lib/credentialStore.js";
 import { testAuth } from "./lib/download.js";
-import { getCredentials } from "./lib/prompts.js";
+import { getCredentials, pickCourse, setFolder } from "./lib/prompts.js";
 import ScientiaAPI from "./lib/scientiaApi.js";
 import { category, check, success, warning } from "./utils/constants.js";
 import { delay } from "./utils/delay.js";
@@ -30,12 +34,12 @@ const credentialStore = new CredentialStore();
 const conf = new ConfigStore(category);
 let credentialsAndTokenStore: TokenAndCredential;
 
-const main = async () => { 
+const main = async () => {
   /**
    * Introduction to the CLI
    */
   await loadInterface();
-  await delay(2000); 
+  await delay(2000);
   console.log(chalk.hex('#3296c8')(`Scientia CLI v${"1.0.0"}`));
 
   if (args.clean) {
@@ -65,7 +69,7 @@ const main = async () => {
     const tokenAndCredentials = await getCredentials();
     await credentialStore.setCredentials(tokenAndCredentials.credentials);
     credentialsAndTokenStore = tokenAndCredentials;
-  } 
+  }
   else {
     /**
      * feels like there's a lot of code duplication, maybe look at some way to reduce it?
@@ -83,7 +87,7 @@ const main = async () => {
     }
     else {
       console.log(success(`${check} successefully authenticated and signed in!`));
-      credentialsAndTokenStore = {credentials: existingCredentials, token: _token};
+      credentialsAndTokenStore = { credentials: existingCredentials, token: _token };
     }
   }
 
@@ -91,6 +95,78 @@ const main = async () => {
    * insert witty comment for this section that I'm too tired to think of. 
    */
   const scientiaAPI = new ScientiaAPI(credentialsAndTokenStore.token);
+  const confSpinner = ora('retrieving default location for storing resources').start();
+  await delay(1000);
+  confSpinner.stop();
+  if (!conf.getFolderPath()) {
+    console.log(warning('Could not retrieve default location for storing resources'));
+    const folderPath = await setFolder();
+    conf.setFolderPath(folderPath);
+    console.log(success(`${check} Sucessefully stored default location for placing new resources!`));
+  } else {
+    console.log(success(`${check} Retrieved default location for storing resources!`));
+  }
+
+  const currentShortcuts = conf.getShortcuts();
+  let course: Course = {} as Course;
+  const shortCutArg: string = args.shortcut;
+  if (shortCutArg) {
+    course = currentShortcuts[shortCutArg];
+  }
+
+  if (args.all) {
+    const shortcuts = Object.keys(currentShortcuts);
+    for (let i = 0; i < shortcuts.length; i++) {
+      let course = currentShortcuts[shortcuts[i]]
+      await downloadCourse(course, scientiaAPI, shortCutArg, conf, args.open, false);
+    }
+  } else {
+    await downloadCourse(course, scientiaAPI, shortCutArg, conf, args.open);
+  }
+
+  async function downloadCourse(course: Course, materialsAPI: ScientiaAPI, shortCutArg: string, conf: ConfigStore, argvOpenFolder: boolean, openFolder: boolean = true,) {
+    let folderPath = args.dir ? process.cwd() : conf.getFolderPath();
+    if (!course) {
+      const spinner = ora('Fetching courses...').start();
+      const courses = await materialsAPI.getCourses();
+      spinner.stop();
+      spinner.clear();
+      if (shortCutArg) {
+        console.log(warning(`No course found for shortcut ${shortCutArg}, assign one below:`))
+      }
+      const courseNameChosen = await pickCourse(courses as Course[])
+      if (shortCutArg) {
+        console.log(success(`Shortcut ${shortCutArg}, assigned to ${courseNameChosen.course}!`))
+      }
+      course = courses.find((x: { title: string }) => x.title === courseNameChosen.course) as Course
+      if (shortCutArg) {
+        conf.setShortcuts(shortCutArg, course)
+      }
+    } else {
+      console.log(chalk.blueBright(course.title))
+    }
+
+    if (argvOpenFolder) {
+      open(path.join(folderPath, course.title))
+      return;
+    }
+
+    const spinner2 = ora('Fetching course materials...').start();
+    const resourcesResult = await materialsAPI.getCourseResources(course.code)
+    const nonLinkResources = resourcesResult.data.filter((x: { type: string }) => x.type == 'file').map((x: { title: string, path: string }) => {
+      x.title = path.parse(x.title).name + path.parse(x.path).ext
+      return x
+    }) as Resource[]
+    const pdfLinkResources = resourcesResult.data.filter((x: { type: string, path: string }) => x.type == 'link' && x.path.endsWith(".pdf")) as ResourceWithLink[]
+    spinner2.stop()
+    spinner2.clear()
+    console.log(success(`Found ${nonLinkResources.length + pdfLinkResources.length} resources!`))
+    const concurrentDownloader = new ConcurrentDownloader(materialsAPI, course.title, folderPath)
+    concurrentDownloader.scheduleDownloads(nonLinkResources)
+    concurrentDownloader.scheduleLinkDownloads(pdfLinkResources)
+    await concurrentDownloader.executeDownloads(openFolder)
+  }
+
   // const courses: Array<Course> = await scientiaAPI.getCourses("courses/");
   // console.log(courses); 
 };
