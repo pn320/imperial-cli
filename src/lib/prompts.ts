@@ -121,12 +121,12 @@ export const setFolder = async () => {
 
 export const promptOpenFolder = async () => {
   const questions = [
-      {
-          name: 'openFolder',
-          type: 'confirm',
-          default: true,
-          message: 'Open Folder ?'
-      }
+    {
+      name: 'openFolder',
+      type: 'confirm',
+      default: true,
+      message: 'Open Folder ?'
+    }
   ];
   return inquirer.prompt(questions);
 }
