@@ -22,6 +22,6 @@ optional arguments:
   -a, --all      download resources for all courses with saved shortcuts together
 ```
 
-Calling it like so `scientia ${shortcut_you_wish_to_assign}` will then allow you to choose from a list of the modules and select the one you'd like to assign the shortcut to, which will then be saved for the next time. Implemented with fuzzy finder so you can quickly search for the module you are looking for.
+Calling it like so `imperial-cli ${shortcut_you_wish_to_assign}` will then allow you to choose from a list of the modules and select the one you'd like to assign the shortcut to, which will then be saved for the next time. Implemented with fuzzy finder so you can quickly search for the module you are looking for.
 
 The rest of the options are fairly self explanatory, if there is anything in terms of the documentation that you feel is lacking, feel free to raise an issue!
