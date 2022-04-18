@@ -13,7 +13,7 @@ import CredentialStore from "./lib/credentialStore.js";
 import { testAuth } from "./lib/download.js";
 import { getCredentials, pickCourse, setFolder } from "./lib/prompts.js";
 import ScientiaAPI from "./lib/scientiaApi.js";
-import { category, check, success, warning } from "./utils/constants.js";
+import { category, check, courseColor, success, warning } from "./utils/constants.js";
 import { delay } from "./utils/delay.js";
 import { loadInterface } from "./utils/startup.js";
 
@@ -57,7 +57,7 @@ const main = async () => {
    * Boo Windows:_
    */
   const spinner = ora('retrieving credentials from keychain').start();
-  await delay(1000);
+  await delay(500);
   let existingCredentials = await credentialStore.getCredentials();
   spinner.stop();
 
@@ -77,7 +77,7 @@ const main = async () => {
      */
     console.log(success(`${check} Succesefully retrieved credentials from keychain!`));
     const spinner = ora('signing into scientia').start();
-    await delay(1000);
+    await delay(500);
     spinner.stop();
     const _token = await testAuth(existingCredentials);
     if (!_token) {
@@ -96,7 +96,7 @@ const main = async () => {
    */
   const scientiaAPI = new ScientiaAPI(credentialsAndTokenStore.token);
   const confSpinner = ora('retrieving default location for storing resources').start();
-  await delay(1000);
+  await delay(500);
   confSpinner.stop();
   if (!conf.getFolderPath()) {
     console.log(warning('Could not retrieve default location for storing resources'));
@@ -143,7 +143,7 @@ const main = async () => {
         conf.setShortcuts(shortCutArg, course)
       }
     } else {
-      console.log(chalk.blueBright(course.title))
+      console.log(courseColor(course.title))
     }
 
     if (argvOpenFolder) {
